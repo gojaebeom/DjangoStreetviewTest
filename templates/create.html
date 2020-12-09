@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1>스트릿 뷰 업로드</h1>
+<form action="/store" method="post" id="streetViewForm">
+    {% csrf_token %}
+    <input type="text" name="title" placeholder="게시물 제목을 입력하세요"><br>
+    <input type="text" name="streetUrl" placeholder="구글 스트릿뷰 링크를 입력하세요">
+    <input type="hidden" name="streetXY">
+    <div id="street-view-wrap"></div>
+    <button type="submit">등록</button>
+</form>
+<script>
+    const streetViewForm = document.getElementById('streetViewForm');
+    const streetViewWrap = document.getElementById('street-view-wrap');
+    streetViewForm.streetUrl.onblur = () => {
+        console.log(streetViewForm.streetUrl.value);
+        const streetXY = streetViewForm.streetUrl.value.split('@')[1].split(',');
+        console.log(streetXY[0]+","+streetXY[1]);
+        streetViewForm.streetXY.value = streetXY[0]+","+streetXY[1];
+        console.log(streetViewForm.streetXY.value);
+        streetViewWrap.innerHTML = `
+        <iframe
+        width="600"
+        height="450"
+        frameborder="0" style="border:0"
+        src="https://www.google.com/maps/embed/v1/streetview?key=AIzaSyCArJV7Z5NU_M54qFp8tLdm4Am6Ogriqsc&location=${streetXY[0]+","+streetXY[1]}&heading=210&pitch=10&fov=35"
+        allowfullscreen>
+        </iframe>
+        `;
+        streetViewForm.streetUrl.value = '';
+    }
+</script>
+{% endblock %}
